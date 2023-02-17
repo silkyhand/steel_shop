@@ -5,7 +5,7 @@
 # User = get_user_model()
 
 
-# class Post(models.Model):
+# class Product(models.Model):
 #     text = models.TextField()
 #     pub_date = models.DateTimeField(auto_now_add=True)
 #     author = models.ForeignKey(
