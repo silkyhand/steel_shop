@@ -8,23 +8,34 @@ User = get_user_model()
 
 class Category(models.Model):
     name_cat = models.CharField('Название подкатегории', max_length=250)
-    slug =  models.SlugField(max_length=50, unique=True)
+    slug = models.SlugField(max_length=50, unique=True)
 
     def get_absolute_url(self):
-       return reverse('products:', kwargs={'id': self.id, 'name': self.name})
-
-    
-
+        return reverse('products:products_category',  args=[self.slug])
 
 
 class Subcategory(models.Model):
     name = models.CharField('Название подкатегории', max_length=250)
     slug = models.SlugField(max_length=50, unique=True)
-    categories = models.ForeignKey(Category, verbose_name='Категория', on_delete=models.SET_NULL, null=True)
+    category = models.ForeignKey(
+        Category, 
+        verbose_name='Подкатегория', 
+        on_delete=models.SET_NULL,
+        related_name='subcategories'
+        )
+
+    def get_absolute_url(self):
+        return reverse('products:products_subcategory',
+                       kwargs={'cat_slug': self.category.slug,
+                               'subcat_slug': self.slug}
+                       )    
 
 
 class Product(models.Model):
-    text = models.TextField()
+    base_price = models.IntegerField('Базовая цена')
+    coeff_tonne_metre = models.IntegerField('Коэфф. пересчета тонны в метры')
+    coeff_dicscount = models.DecimalField('Коэфф. скидки',
+                                          max_digits=3,  decimal_places=2)
     pub_date = models.DateTimeField(auto_now_add=True)
     author = models.ForeignKey(
         User,

@@ -7,6 +7,10 @@ app_name = 'products'
 
 urlpatterns = [
     path('', views.index, name='index'),
-    # path('group/<slug:slug>/', views.group_posts, name='group_posts'),
-    # path('group/', views.group_list, name='group_list')
+    path('category/<cat_slug:slug>/<subcat_slug:slug>/',
+         views.products_subcategory, name='products_subcategory'
+         ),
+    path('category/<cat_slug:slug>/', views.products_category,
+         name='products_category'
+         ),
 ]
