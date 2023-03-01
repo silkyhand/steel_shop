@@ -7,20 +7,27 @@ User = get_user_model()
 
 
 class Category(models.Model):
-    name_cat = models.CharField('Название подкатегории', max_length=250)
+    name_cat = models.CharField('Группа товаров', max_length=250)
     slug = models.SlugField(max_length=50, unique=True)
 
     def get_absolute_url(self):
         return reverse('products:products_category',  args=[self.slug])
+    
+    def __str__(self):
+        return self.name_cat
+    
+    class Meta:
+        verbose_name = 'Группа товаров'
+        verbose_name_plural = 'Группы товаров'
 
 
 class Subcategory(models.Model):
-    name = models.CharField('Название подкатегории', max_length=250)
+    name = models.CharField('Категория товаров', max_length=250)
     slug = models.SlugField(max_length=50, unique=True)
     category = models.ForeignKey(
         Category, 
-        verbose_name='Подкатегория', 
-        on_delete=models.SET_NULL,
+        verbose_name='Группа товаров', 
+        on_delete=models.CASCADE,
         related_name='subcategories'
         )
 
@@ -28,30 +35,79 @@ class Subcategory(models.Model):
         return reverse('products:products_subcategory',
                        kwargs={'cat_slug': self.category.slug,
                                'subcat_slug': self.slug}
-                       )    
+                       )
+
+    def __str__(self):
+        return self.name_subcat
+    
+    class Meta:
+        verbose_name = 'Категория товаров'
+        verbose_name_plural = 'Категории товаров'
+
+
+class Specification(models.Model):
+    name = models.CharField('Характеристика', max_length=250)
+    subcategory = models.ForeignKey(
+        Subcategory, 
+        verbose_name='Категория товаров', 
+        on_delete=models.CASCADE,
+        related_name='specifications'
+        )
+    
+    class Meta:
+        verbose_name = 'Характеристика товара'
+        verbose_name_plural = 'Характеристики товаров'
 
 
 class Product(models.Model):
     base_price = models.IntegerField('Базовая цена')
     coeff_tonne_metre = models.IntegerField('Коэфф. пересчета тонны в метры')
-    coeff_dicscount = models.DecimalField('Коэфф. скидки',
-                                          max_digits=3,  decimal_places=2)
-    pub_date = models.DateTimeField(auto_now_add=True)
-    author = models.ForeignKey(
-        User,
+    discount = models.IntegerField('Скидка в процентах', blank=True, default=0)
+    subcategory = models.ForeignKey(
+        Subcategory,
         on_delete=models.CASCADE,
-        related_name='posts'
+        related_name='products'
         )
-    group = models.ForeignKey(
-        'Group',
-        blank=True,
-        null=True,
-        on_delete=models.SET_NULL,
-        related_name='posts'
-    )
+    # specifications = models.ManyToManyField(
+    #     'Specification',        
+    #     through='SpecificationAmount',
+    #     related_name='products',
+    #     verbose_name='характеристики'
+    # )
+
+    @property
+    def get_discount(self):
+        '''Расчитать стоимость со скидкой'''
+        price = int(self.price * (100 - self.discount) / 100)
+        return price
 
     def __str__(self):
-        return self.text[:50]
+        return self.subcategory.name
 
     class Meta:
-        ordering = ['-pub_date']
+        ordering = ['-base_price']
+        verbose_name = 'Товар'
+        verbose_name_plural = 'Товары'
+
+
+class ProductSpecificationValue(models.Model):
+    product = models.ForeignKey(
+        Product,
+        on_delete=models.CASCADE,
+        related_name='value'
+        )
+    specification = models.ForeignKey(
+        Specification,
+        on_delete=models.CASCADE,
+        related_name='value'
+        )
+    value = models.CharField('Значение', max_length=50)
+
+    def __str__(self):
+        return self.subcategory.name
+    
+    class Meta:
+        verbose_name = 'Значение характеристики'
+        verbose_name_plural = 'Значение характеристик'
+
+            
