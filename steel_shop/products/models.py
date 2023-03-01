@@ -38,7 +38,7 @@ class Subcategory(models.Model):
                        )
 
     def __str__(self):
-        return self.name_subcat
+        return self.name
     
     class Meta:
         verbose_name = 'Категория товаров'
@@ -58,16 +58,21 @@ class Specification(models.Model):
         verbose_name = 'Характеристика товара'
         verbose_name_plural = 'Характеристики товаров'
 
+    def __str__(self):
+        return self.name    
+
 
 class Product(models.Model):
-    base_price = models.IntegerField('Базовая цена')
-    coeff_tonne_metre = models.IntegerField('Коэфф. пересчета тонны в метры')
-    discount = models.IntegerField('Скидка в процентах', blank=True, default=0)
     subcategory = models.ForeignKey(
         Subcategory,
         on_delete=models.CASCADE,
-        related_name='products'
+        related_name='products',
+        verbose_name='Категория товара',
         )
+    base_price = models.IntegerField('Базовая цена')
+    coeff_tonne_metre = models.IntegerField('Коэфф. пересчета тонны в метры')
+    discount = models.IntegerField('Скидка в процентах', blank=True, default=0)
+    
     # specifications = models.ManyToManyField(
     #     'Specification',        
     #     through='SpecificationAmount',
@@ -104,7 +109,7 @@ class ProductSpecificationValue(models.Model):
     value = models.CharField('Значение', max_length=50)
 
     def __str__(self):
-        return self.subcategory.name
+        return self.value
     
     class Meta:
         verbose_name = 'Значение характеристики'

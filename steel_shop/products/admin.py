@@ -6,6 +6,7 @@ from . models import Category, Product, ProductSpecificationValue, Subcategory, 
 class SpecificationInline(admin.TabularInline):
     model = ProductSpecificationValue
     min_num = 1
+    extra = 0
 
 
 @admin.register(Category)
@@ -18,8 +19,9 @@ class CategoryAdmin(admin.ModelAdmin):
 
 @admin.register(Product)
 class ProductAdmin(admin.ModelAdmin):
-    list_display = ('base_price', 'discount', 'subcategory',)
+    list_display = ('subcategory', 'base_price', 'discount', )
     search_fields = ('subcategory',)
+    list_filter = ('subcategory',)
     # list_editable = ('base_price', 'discount',)
     empty_value_display = '-пусто-'
     inlines = (
