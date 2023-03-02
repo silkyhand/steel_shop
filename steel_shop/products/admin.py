@@ -19,7 +19,7 @@ class CategoryAdmin(admin.ModelAdmin):
 
 @admin.register(Product)
 class ProductAdmin(admin.ModelAdmin):
-    list_display = ('subcategory', 'base_price', 'discount', )
+    list_display = ('subcategory', 'base_price', 'discount',)
     search_fields = ('subcategory',)
     list_filter = ('subcategory',)
     # list_editable = ('base_price', 'discount',)

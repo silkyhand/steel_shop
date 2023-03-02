@@ -73,12 +73,12 @@ class Product(models.Model):
     coeff_tonne_metre = models.IntegerField('Коэфф. пересчета тонны в метры')
     discount = models.IntegerField('Скидка в процентах', blank=True, default=0)
     
-    # specifications = models.ManyToManyField(
-    #     'Specification',        
-    #     through='SpecificationAmount',
-    #     related_name='products',
-    #     verbose_name='характеристики'
-    # )
+    specifications = models.ManyToManyField(
+        'Specification',        
+        through='ProductSpecificationValue',
+        related_name='products',
+        verbose_name='характеристики'
+    )
 
     @property
     def get_discount(self):
