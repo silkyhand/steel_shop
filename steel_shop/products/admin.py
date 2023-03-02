@@ -3,7 +3,7 @@ from django.contrib import admin
 from . models import Category, Product, ProductSpecificationValue, Subcategory, Specification
 
 
-class SpecificationInline(admin.TabularInline):
+class SpecificationValueInline(admin.TabularInline):
     model = ProductSpecificationValue
     min_num = 1
     extra = 0
@@ -19,14 +19,21 @@ class CategoryAdmin(admin.ModelAdmin):
 
 @admin.register(Product)
 class ProductAdmin(admin.ModelAdmin):
-    list_display = ('subcategory', 'base_price', 'discount',)
+    list_display = ('subcategory', 'show_specifications', 'base_price', 'discount',)
     search_fields = ('subcategory',)
     list_filter = ('subcategory',)
     # list_editable = ('base_price', 'discount',)
     empty_value_display = '-пусто-'
     inlines = (
-        SpecificationInline,
+        SpecificationValueInline,
     )
+
+    def show_specifications(self, obj):
+        specification_list = []
+        for specification in obj.specifications.all():
+            specification_list.append(specification.name)
+        return specification_list
+
 
 
 @admin.register(ProductSpecificationValue)
